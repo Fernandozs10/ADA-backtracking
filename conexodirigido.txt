@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void dfs(vector<vector<int>>& grafo, vector<bool>& visitado, int v) {
+    visitado[v] = true;
+
+    for (int vecino : grafo[v]) {
+        if (!visitado[vecino]) {
+            dfs(grafo, visitado, vecino);
+        }
+    }
+}
+
+bool es_conexo(vector<vector<int>>& grafo) {
+    int n = grafo.size();
+
+    vector<bool> visitado(n, false);
+
+    // Realizar el recorrido DFS desde cada vértice del grafo
+    for (int i = 0; i < n; i++) {
+        dfs(grafo, visitado, i);
+
+        // Verificar si se visitaron todos los vértices
+        for (bool v : visitado) {
+            if (!v) {
+                return false;  // No se pudo llegar a algún vértice, el grafo no es conexo
+            }
+        }
+
+        // Reiniciar el vector de visitados para el siguiente recorrido
+        fill(visitado.begin(), visitado.end(), false);
+    }
+
+    return true;  // Se visitaron todos los vértices desde cada vértice, el grafo es conexo
+}
+
+int main() {
+    int n = 6;  // Número de vértices del grafo
+
+    vector<vector<int>> grafo(n);  // Lista de adyacencia para representar el grafo
+
+    // Agregar aristas al grafo
+    grafo[0] = {1};
+    grafo[1] = {2};
+    grafo[2] = {0};
+    grafo[3] = {4};
+    grafo[4] = {5};
+    grafo[5] = {3};
+
+    if (es_conexo(grafo)) {
+        cout << "El grafo es conexo." << endl;
+    } else {
+        cout << "El grafo no es conexo." << endl;
+    }
+
+    return 0;
+}

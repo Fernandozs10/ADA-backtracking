@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void imprimirTablero(const vector<vector<char>>& tablero) {
+    int n = tablero.size();
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << tablero[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+bool esValido(const vector<vector<char>>& tablero, int fila, int columna) {
+    int n = tablero.size();
+
+    // Comprobar si hay alguna reina en la misma columna
+    for (int i = 0; i < fila; i++) {
+        if (tablero[i][columna] == 'Q') {
+            return false;
+        }
+    }
+
+    // Comprobar si hay alguna reina en la misma diagonal principal
+    for (int i = fila, j = columna; i >= 0 && j >= 0; i--, j--) {
+        if (tablero[i][j] == 'Q') {
+            return false;
+        }
+    }
+
+    // Comprobar si hay alguna reina en la misma diagonal secundaria
+    for (int i = fila, j = columna; i >= 0 && j < n; i--, j++) {
+        if (tablero[i][j] == 'Q') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void resolverNReinas(vector<vector<char>>& tablero, int fila, int n, int& soluciones) {
+    if (fila >= n) {
+        // Se ha encontrado una solución válida
+        soluciones++;
+        cout << "Solucion " << soluciones << ":" << endl;
+        imprimirTablero(tablero);
+        return;
+    }
+
+    for (int columna = 0; columna < n; columna++) {
+        if (esValido(tablero, fila, columna)) {
+            tablero[fila][columna] = 'Q';  // Colocar una reina en el tablero
+
+            // Llamar recursivamente para la siguiente fila
+            resolverNReinas(tablero, fila + 1, n, soluciones);
+
+            tablero[fila][columna] = '.';  // Retroceder (quitar la reina del tablero)
+        }
+    }
+}
+
+void nReinas(int n) {
+    vector<vector<char>> tablero(n, vector<char>(n, '.'));  // Crear un tablero vacío
+    int soluciones = 0;
+    resolverNReinas(tablero, 0, n, soluciones);
+}
+
+int main() {
+    int n = 4;  // Número de reinas y tamaño del tablero
+    nReinas(n);
+
+    return 0;
+}

@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+
+using namespace std;
+
+void dfs(vector<vector<int>>& grafo, vector<bool>& visitado, stack<int>& pila, int v) {
+    visitado[v] = true;
+
+    for (int vecino : grafo[v]) {
+        if (!visitado[vecino]) {
+            dfs(grafo, visitado, pila, vecino);
+        }
+    }
+
+    pila.push(v);
+}
+
+bool es_DAG(vector<vector<int>>& grafo) {
+    int n = grafo.size();
+
+    vector<bool> visitado(n, false);
+    stack<int> pila;
+
+    // Realizar el recorrido DFS desde cada vértice no visitado
+    for (int i = 0; i < n; i++) {
+        if (!visitado[i]) {
+            dfs(grafo, visitado, pila, i);
+        }
+    }
+
+    vector<int> orden_topologico;
+    while (!pila.empty()) {
+        orden_topologico.push_back(pila.top());
+        pila.pop();
+    }
+
+    // Verificar si el orden topológico es válido (no hay aristas que violen el orden)
+    for (int i = 0; i < n; i++) {
+        for (int vecino : grafo[i]) {
+            if (orden_topologico[vecino] > orden_topologico[i]) {
+                return false;  // Existe una arista que viola el orden topológico, el grafo tiene ciclos
+            }
+        }
+    }
+
+    return true;  // No se encontraron aristas que violen el orden topológico, el grafo es un DAG
+}
+
+int main() {
+    int n = 6;  // Número de vértices del grafo
+
+    vector<vector<int>> grafo(n);  // Lista de adyacencia para representar el grafo
+
+    // Agregar aristas al grafo
+    grafo[0] = {1};
+    grafo[1] = {2, 3};
+    grafo[2] = {3};
+    grafo[3] = {4, 5};
+    grafo[4] = {};
+    grafo[5] = {2};
+
+    if (es_DAG(grafo)) {
+        cout << "El grafo es un DAG." << endl;
+    } else {
+        cout << "El grafo contiene ciclos." << endl;
+    }
+
+    return 0;
+}

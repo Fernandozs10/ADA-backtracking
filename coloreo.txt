@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+bool es_color_valido(vector<vector<int>>& grafo, int vertice, int color, vector<int>& colores) {
+    for (int i = 0; i < grafo.size(); i++) {
+        if (grafo[vertice][i] && colores[i] == color) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool coloreo_backtracking(vector<vector<int>>& grafo, int num_colores, int num_vertices, vector<int>& colores, int vertice_actual) {
+    if (vertice_actual == num_vertices) {
+        return true;  // Se ha asignado un color a todos los vértices
+    }
+
+    for (int color = 1; color <= num_colores; color++) {
+        if (es_color_valido(grafo, vertice_actual, color, colores)) {
+            colores[vertice_actual] = color;
+            if (coloreo_backtracking(grafo, num_colores, num_vertices, colores, vertice_actual + 1)) {
+                return true;  // Se encontró una solución válida
+            }
+            colores[vertice_actual] = 0;  // Retroceder y probar con el siguiente color
+        }
+    }
+
+    return false;  // No se encontró una solución válida
+}
+
+void coloreo_grafo(vector<vector<int>>& grafo, int num_colores) {
+    int num_vertices = grafo.size();
+    vector<int> colores(num_vertices, 0);  // Vector de colores asignados a cada vértice
+
+    if (coloreo_backtracking(grafo, num_colores, num_vertices, colores, 0)) {
+        cout << "Se encontró una solución válida:" << endl;
+        for (int i = 0; i < num_vertices; i++) {
+            cout << "Vértice " << i << ": Color " << colores[i] << endl;
+        }
+    } else {
+        cout << "No se encontró una solución válida." << endl;
+    }
+}
+
+int main() {
+    // Ejemplo de grafo no dirigido con 5 vértices y 6 aristas
+    vector<vector<int>> grafo = {
+        {0, 1, 1, 1, 0},
+        {1, 0, 1, 0, 1},
+        {1, 1, 0, 1, 0},
+        {1, 0, 1, 0, 1},
+        {0, 1, 0, 1, 0}
+    };
+
+    int num_colores = 3;  // Número de colores disponibles
+
+    coloreo_grafo(grafo, num_colores);
+
+    return 0;
+}

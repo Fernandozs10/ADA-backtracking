@@ -1,0 +1,39 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void sumaSubconjuntos(vector<int>& conjunto, int indice, int sumaParcial, int objetivo, vector<int>& solucionActual) {
+    if (sumaParcial == objetivo) {
+        // Se ha encontrado una solución válida
+        cout << "Solución encontrada: ";
+        for (int num : solucionActual) {
+            cout << num << " ";
+        }
+        cout << endl;
+    } else if (indice < conjunto.size()) {
+        // Marcar el elemento actual como incluido en el subconjunto
+        solucionActual.push_back(conjunto[indice]);
+
+        // Llamar recursivamente a sumaSubconjuntos para el siguiente índice y la suma parcial actualizada
+        sumaSubconjuntos(conjunto, indice + 1, sumaParcial + conjunto[indice], objetivo, solucionActual);
+
+        // Retroceder, desmarcar el elemento actual y llamar recursivamente a sumaSubconjuntos sin incluir el elemento
+        solucionActual.pop_back();
+        sumaSubconjuntos(conjunto, indice + 1, sumaParcial, objetivo, solucionActual);
+    }
+}
+
+void encontrarSumaSubconjuntos(vector<int>& conjunto, int objetivo) {
+    vector<int> solucionActual;
+    sumaSubconjuntos(conjunto, 0, 0, objetivo, solucionActual);
+}
+
+int main() {
+    vector<int> conjunto = {1, 3, 5, 7, 9};
+    int objetivo = 12;
+
+    encontrarSumaSubconjuntos(conjunto, objetivo);
+
+    return 0;
+}

@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+bool es_posicion_valida(vector<vector<int>>& laberinto, int filas, int columnas, int fila, int columna, vector<vector<bool>>& visitado) {
+    // Verificar si la posición está dentro de los límites del laberinto
+    if (fila >= 0 && fila < filas && columna >= 0 && columna < columnas) {
+        // Verificar si la posición no es un obstáculo y no ha sido visitada
+        if (laberinto[fila][columna] == 0 && !visitado[fila][columna]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool resolver_laberinto_backtracking(vector<vector<int>>& laberinto, int filas, int columnas, int fila_actual, int columna_actual, int fila_objetivo, int columna_objetivo, vector<vector<bool>>& visitado) {
+    if (fila_actual == fila_objetivo && columna_actual == columna_objetivo) {
+        return true;  // Se ha llegado a la posición objetivo
+    }
+
+    if (es_posicion_valida(laberinto, filas, columnas, fila_actual, columna_actual, visitado)) {
+        visitado[fila_actual][columna_actual] = true;  // Marcar la posición actual como visitada
+
+        // Intentar moverse en todas las direcciones posibles (arriba, abajo, izquierda, derecha)
+        if (resolver_laberinto_backtracking(laberinto, filas, columnas, fila_actual - 1, columna_actual, fila_objetivo, columna_objetivo, visitado)) {
+            return true;  // Se encontró un camino válido moviéndose hacia arriba
+        }
+        if (resolver_laberinto_backtracking(laberinto, filas, columnas, fila_actual + 1, columna_actual, fila_objetivo, columna_objetivo, visitado)) {
+            return true;  // Se encontró un camino válido moviéndose hacia abajo
+        }
+        if (resolver_laberinto_backtracking(laberinto, filas, columnas, fila_actual, columna_actual - 1, fila_objetivo, columna_objetivo, visitado)) {
+            return true;  // Se encontró un camino válido moviéndose hacia la izquierda
+        }
+        if (resolver_laberinto_backtracking(laberinto, filas, columnas, fila_actual, columna_actual + 1, fila_objetivo, columna_objetivo, visitado)) {
+            return true;  // Se encontró un camino válido moviéndose hacia la derecha
+        }
+
+        visitado[fila_actual][columna_actual] = false;  // Desmarcar la posición actual como visitada y retroceder
+    }
+
+    return false;  // No se encontró un camino válido
+}
+
+int main() {
+    vector<vector<int>> laberinto = {
+        {0, 1, 0, 0, 0},
+        {0, 1, 1, 1, 0},
+        {0, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0}
+    };
+
+    int filas = laberinto.size();
+    int columnas = laberinto[0].size();
+
+    int fila_inicial = 0;
+    int columna_inicial = 0;
+    int fila_objetivo = 4;
+    int columna_objetivo = 4;
+
+    vector<vector<bool>> visitado(filas, vector<bool>(columnas, false));  // Matriz para almacenar las posiciones visitadas
+
+    if (resolver_laberinto_backtracking(laberinto, filas, columnas, fila_inicial, columna_inicial, fila_objetivo, columna_objetivo, visitado)) {
+        cout << "Se encontró un camino válido:" << endl;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                cout << visitado[i][j] << " ";
+            }
+            cout << endl;
+        }
+    } else {
+        cout << "No se encontró un camino válido." << endl;
+    }
+
+    return 0;
+}

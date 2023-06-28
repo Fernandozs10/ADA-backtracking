@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+
+using namespace std;
+
+void tsp_backtracking(vector<vector<int>>& grafo, vector<int>& nodos, vector<int>& camino_actual, int costo_actual, vector<int>& mejor_camino, int& mejor_costo, vector<bool>& visitado) {
+    if (camino_actual.size() == nodos.size()) {
+        int costo = costo_actual + grafo[camino_actual.back()][camino_actual[0]];
+        if (costo < mejor_costo) {
+            mejor_camino = camino_actual;
+            mejor_costo = costo;
+        }
+        return;
+    }
+
+    for (int i = 0; i < nodos.size(); i++) {
+        if (!visitado[i]) {
+            int nodo_actual = nodos[i];
+            int costo_arista = grafo[camino_actual.back()][nodo_actual];
+
+            camino_actual.push_back(nodo_actual);
+            costo_actual += costo_arista;
+            visitado[i] = true;
+
+            tsp_backtracking(grafo, nodos, camino_actual, costo_actual, mejor_camino, mejor_costo, visitado);
+
+            camino_actual.pop_back();
+            costo_actual -= costo_arista;
+            visitado[i] = false;
+        }
+    }
+}
+
+vector<int> tsp(vector<vector<int>>& grafo, vector<int>& nodos) {
+    int n = nodos.size();
+    vector<int> mejor_camino;
+    int mejor_costo = numeric_limits<int>::max();
+    vector<bool> visitado(n, false);
+
+    vector<int> camino_actual;
+    camino_actual.push_back(nodos[0]);
+    visitado[0] = true;
+
+    tsp_backtracking(grafo, nodos, camino_actual, 0, mejor_camino, mejor_costo, visitado);
+
+    return mejor_camino;
+}
+
+int main() {
+    // Ejemplo de grafo ponderado de 4 nodos
+    vector<vector<int>> grafo = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    vector<int> nodos = {0, 1, 2, 3};  // Nodos del grafo
+
+    vector<int> mejor_camino = tsp(grafo, nodos);
+    int mejor_costo = 0;
+    for (int i = 0; i < mejor_camino.size() - 1; i++) {
+        mejor_costo += grafo[mejor_camino[i]][mejor_camino[i + 1]];
+    }
+
+    // Imprimir el mejor camino y su costo
+    cout << "Mejor camino: ";
+    for (int nodo : mejor_camino) {
+        cout << nodo << " ";
+    }
+    cout << endl;
+
+    cout << "Costo del mejor camino: " << mejor_costo << endl;
+
+    return 0;
+}

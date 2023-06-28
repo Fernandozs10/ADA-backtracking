@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+bool dfs(vector<vector<int>>& grafo, vector<bool>& visitado, int v, int padre) {
+    visitado[v] = true;
+
+    for (int vecino : grafo[v]) {
+        if (!visitado[vecino]) {
+            if (dfs(grafo, visitado, vecino, v)) {
+                return true;  // Se encontró un ciclo
+            }
+        } else if (vecino != padre) {
+            return true;  // Se encontró un ciclo debido a una arista hacia un vértice ya visitado
+        }
+    }
+
+    return false;  // No se encontraron ciclos
+}
+
+bool tieneCiclos(vector<vector<int>>& grafo) {
+    int n = grafo.size();
+
+    vector<bool> visitado(n, false);
+
+    // Realizar el recorrido DFS desde cada vértice no visitado
+    for (int i = 0; i < n; i++) {
+        if (!visitado[i]) {
+            if (dfs(grafo, visitado, i, -1)) {
+                return true;  // Se encontró un ciclo
+            }
+        }
+    }
+
+    return false;  // No se encontraron ciclos
+}
+
+int main() {
+    int n = 6;  // Número de vértices del grafo
+
+    vector<vector<int>> grafo(n);  // Lista de adyacencia para representar el grafo
+
+    // Agregar aristas al grafo
+    grafo[0] = {1, 2};
+    grafo[1] = {0, 3};
+    grafo[2] = {0, 3};
+    grafo[3] = {1, 2, 4};
+    grafo[4] = {3, 5};
+    grafo[5] = {4};
+
+    if (tieneCiclos(grafo)) {
+        cout << "El grafo tiene ciclos." << endl;
+    } else {
+        cout << "El grafo es un grafo acíclico." << endl;
+    }
+
+    return 0;
+}

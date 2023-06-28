@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+bool es_bipartido(vector<vector<int>>& grafo, int inicio) {
+    int n = grafo.size();
+    vector<int> colores(n, -1);  // Vector para almacenar los colores de los vértices (-1 indica que no se ha asignado un color aún)
+
+    colores[inicio] = 0;  // Asignar color 0 al vértice inicial
+
+    queue<int> cola;
+    cola.push(inicio);
+
+    while (!cola.empty()) {
+        int actual = cola.front();
+        cola.pop();
+
+        for (int vecino : grafo[actual]) {
+            if (colores[vecino] == -1) {
+                colores[vecino] = 1 - colores[actual];  // Asignar el color opuesto al vértice actual
+                cola.push(vecino);
+            } else if (colores[vecino] == colores[actual]) {
+                return false;  // Se encontró un vértice adyacente con el mismo color, el grafo no es bipartido
+            }
+        }
+    }
+
+    return true;  // Se asignaron colores de manera bipartida a todos los vértices
+}
+
+int main() {
+    int n = 6;  // Número de vértices del grafo
+
+    vector<vector<int>> grafo(n);  // Lista de adyacencia para representar el grafo
+
+    // Agregar aristas al grafo
+    grafo[0] = {1, 2};
+    grafo[1] = {0, 3};
+    grafo[2] = {0, 4};
+    grafo[3] = {1, 4, 5};
+    grafo[4] = {2, 3};
+    grafo[5] = {3};
+
+    int inicio = 0;  // Vértice inicial para comenzar el coloreo
+
+    if (es_bipartido(grafo, inicio)) {
+        cout << "El grafo es bipartido." << endl;
+    } else {
+        cout << "El grafo no es bipartido." << endl;
+    }
+
+    return 0;
+}
